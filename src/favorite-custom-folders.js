@@ -15,6 +15,21 @@ function initPlugin() {
   BookmarksInjector.init()
 }
 
+
+var list = JSON.parse(localStorage.getItem('plugins') || '[]');
+list = list.map(function(p) {
+  if (typeof p === 'string') p = {url: p, status: 1};
+
+  if (p.url.indexOf('favorite-custom-folders') >= 0) {
+    p.name = 'Кастомные папки';
+    p.author = 'vladislavkovaliov';
+  }
+
+  return p;
+});
+
+localStorage.setItem('plugins', JSON.stringify(list));
+
 if (!window.favorite_custom_folders_ready) {
   if (window.appready) {
     initPlugin()
