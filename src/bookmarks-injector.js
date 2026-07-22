@@ -24,7 +24,7 @@ function init() {
         })
 
         return {
-          title: folder.name,
+          title: folder.title,
           results: folder.cards,
           total_pages: folder.count > 20 ? Math.ceil(folder.count / 20) : 1,
           params: {
@@ -36,7 +36,7 @@ function init() {
               onMore: function () {
                 Lampa.Activity.push({
                   url: folder.name,
-                  title: folder.name,
+                  title: folder.title,
                   component: 'favorite_custom_folder_view',
                   page: 1
                 })

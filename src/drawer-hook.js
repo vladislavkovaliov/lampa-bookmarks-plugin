@@ -29,74 +29,137 @@ function setupCardTracking() {
   }
 }
 
-function toggleCustomFolder(folderName, card) {
-  if (Store.isInFolder(folderName, card.id)) {
-    Store.removeFromFolder(folderName, card.id)
+function toggleCustomFolder(slug, card) {
+  if (Store.isInFolder(slug, card.id)) {
+    Store.removeFromFolder(slug, card.id)
   } else {
-    Store.addToFolder(folderName, card)
+    Store.addToFolder(slug, card)
   }
 
   Lampa.Listener.send('state:changed', { target: 'favorite', card: card })
 }
 
+function confirmDeleteFolder(slug) {
+  var folderTitle = Store.getFolderTitle(slug)
+
+  Lampa.Select.close()
+
+  Lampa.Select.show({
+    title: Lampa.Lang.translate('cf_delete_folder_title').replace('{name}', folderTitle),
+    items: [
+      {
+        title: Lampa.Lang.translate('cf_delete_folder_yes'),
+        onSelect: function () {
+          Store.deleteFolder(slug)
+          Lampa.Noty.show(Lampa.Lang.translate('cf_folder_deleted'))
+          Lampa.Controller.toggle('content')
+        }
+      },
+      {
+        title: Lampa.Lang.translate('cf_delete_folder_no'),
+        onSelect: function () {
+          Lampa.Controller.toggle('content')
+        }
+      }
+    ]
+  })
+}
+
+function showFolderActions(element) {
+  if (element.where && element.where.indexOf('_cf_') === 0) {
+    var slug = element.where.slice(4)
+    var currentTitle = element.title
+
+    Lampa.Select.close()
+
+    Lampa.Select.show({
+      title: Lampa.Lang.translate('cf_rename_folder'),
+      items: [
+        {
+          title: Lampa.Lang.translate('cf_rename'),
+          onSelect: function () {
+            Lampa.Select.close()
+
+            Lampa.Input.edit({
+              title: Lampa.Lang.translate('cf_folder_name'),
+              value: currentTitle,
+              free: true,
+              nosave: true
+            }, function (newTitle) {
+              if (!newTitle || !newTitle.trim()) {
+                Lampa.Controller.toggle('content')
+                return
+              }
+
+              newTitle = newTitle.trim()
+
+              try {
+                Store.renameFolder(slug, newTitle)
+                Lampa.Noty.show(
+                  Lampa.Lang.translate('cf_folder_renamed').replace('{title}', newTitle)
+                )
+              } catch (err) {
+                Lampa.Noty.show(err, { style: 'error' })
+              }
+
+              Lampa.Controller.toggle('content')
+            })
+          }
+        },
+        {
+          title: Lampa.Lang.translate('cf_delete'),
+          onSelect: function () {
+            confirmDeleteFolder(slug)
+          }
+        }
+      ]
+    })
+
+    return true
+  }
+  return false
+}
+
 function buildCustomFoldersSection(card) {
   var items = []
-  var folders = Store.getFolderNames()
+  var slugs = Store.getFolderNames()
 
-  if (folders.length > 0) {
+  if (slugs.length > 0) {
     items.push({ title: Lampa.Lang.translate('cf_my_folders'), separator: true })
   }
 
-  folders.forEach(function (folderName) {
-    var checked = card ? Store.isInFolder(folderName, card.id) : false
+  slugs.forEach(function (slug) {
+    var folderTitle = Store.getFolderTitle(slug)
+    var checked = card ? Store.isInFolder(slug, card.id) : false
 
     items.push({
-      title: folderName,
-      where: '_cf_' + folderName,
-      type: '_cf_' + folderName,
+      title: folderTitle,
+      where: '_cf_' + slug,
+      type: '_cf_' + slug,
       checkbox: true,
       checked: checked,
       onCheck: function () {
         if (!lastCardData) return
-        toggleCustomFolder(folderName, lastCardData)
+        toggleCustomFolder(slug, lastCardData)
       },
       onDraw: function (item) {
-        var deleteBtn = $('<span class="cf-delete-btn" style="cursor:pointer;opacity:0.5;font-size:14px;line-height:1;padding:2px 6px;margin-left:8px" title="' + Lampa.Lang.translate('cf_delete') + '">✕</span>')
+        if (!Lampa.Platform.tv()) {
+          var deleteBtn = $('<span class="cf-delete-btn" style="cursor:pointer;opacity:0.5;font-size:14px;line-height:1;padding:2px 6px;margin-left:8px" title="' + Lampa.Lang.translate('cf_delete') + '">✕</span>')
 
-        var titleEl = item.find('.selectbox-item__title')
-        if (titleEl.length) {
-          var wrapper = $('<div class="cf-folder-row" style="display:flex;align-items:center;justify-content:space-between;width:100%"></div>')
-          titleEl.wrap(wrapper)
-          titleEl.closest('.cf-folder-row').append(deleteBtn)
-        } else {
-          item.append(deleteBtn)
-        }
+          var titleEl = item.find('.selectbox-item__title')
+          if (titleEl.length) {
+            var wrapper = $('<div class="cf-folder-row" style="display:flex;align-items:center;justify-content:space-between;width:100%"></div>')
+            titleEl.wrap(wrapper)
+            titleEl.closest('.cf-folder-row').append(deleteBtn)
+          } else {
+            item.append(deleteBtn)
+          }
 
-        deleteBtn.on('click', function (e) {
-          e.stopPropagation()
-
-          Lampa.Select.close()
-
-          Lampa.Select.show({
-            title: Lampa.Lang.translate('cf_delete_folder_title').replace('{name}', folderName),
-            items: [
-              {
-                title: Lampa.Lang.translate('cf_delete_folder_yes'),
-                onSelect: function () {
-                  Store.deleteFolder(folderName)
-                  Lampa.Noty.show(Lampa.Lang.translate('cf_folder_deleted').replace('{name}', folderName))
-                  Lampa.Controller.toggle('content')
-                }
-              },
-              {
-                title: Lampa.Lang.translate('cf_delete_folder_no'),
-                onSelect: function () {
-                  Lampa.Controller.toggle('content')
-                }
-              }
-            ]
+          deleteBtn.on('click', function (e) {
+            e.stopPropagation()
+            confirmDeleteFolder(slug)
           })
-        })
+        }
       }
     })
   })
@@ -195,6 +258,9 @@ function openFavoritesDrawer(card) {
       if (a.type && FAV_KEYS.indexOf(a.type) >= 0) {
         Lampa.Favorite.toggle(a.type, card)
       }
+    },
+    onLong: function (element) {
+      showFolderActions(element)
     }
   })
 }
@@ -245,6 +311,14 @@ function onPreshow(e) {
   for (var j = 0; j < customItems.length; j++) {
     e.active.items.push(customItems[j])
   }
+
+  var origOnLong = e.active.onLong
+  e.active.onLong = function (element) {
+    if (showFolderActions(element)) return
+    if (origOnLong) {
+      origOnLong(element)
+    }
+  }
 }
 
 function init() {
@@ -257,5 +331,3 @@ export default {
   init: init,
   getLastCardData: function () { return lastCardData }
 }
-
-

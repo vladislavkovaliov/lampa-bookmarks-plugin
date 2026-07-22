@@ -64,6 +64,21 @@ function registerTranslations() {
       ru: 'Удалить',
       en: 'Delete',
       uk: 'Видалити'
+    },
+    cf_rename_folder: {
+      ru: '✏️ Переименовать...',
+      en: '✏️ Rename folder...',
+      uk: '✏️ Перейменувати...'
+    },
+    cf_folder_renamed: {
+      ru: 'Папка переименована в "{title}"',
+      en: 'Folder renamed to "{title}"',
+      uk: 'Папку перейменовано на "{title}"'
+    },
+    cf_rename: {
+      ru: 'Переименовать',
+      en: 'Rename',
+      uk: 'Перейменувати'
     }
   })
 }

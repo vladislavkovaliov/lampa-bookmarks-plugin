@@ -11,13 +11,13 @@ global.Lampa = {
     change: vi.fn()
   },
   Utils: {
-    cardImgBackground: vi.fn(() => 'bg-url')
+    cardImgBackground: vi.fn(function() { return 'bg-url' })
   },
   Activity: {
     push: vi.fn()
   },
   Lang: {
-    translate: vi.fn((key) => {
+    translate: vi.fn(function(key) {
       var map = {
         cf_section_title: 'Мои папки'
       }
@@ -43,7 +43,7 @@ describe('BookmarksInjector', () => {
   it('should register ContentRows entry', () => {
     BookmarksInjector.init()
     expect(Lampa.ContentRows.add).toHaveBeenCalledTimes(1)
-    const config = Lampa.ContentRows.add.mock.calls[0][0]
+    var config = Lampa.ContentRows.add.mock.calls[0][0]
     expect(config.name).toBe('custom_folders')
     expect(config.title).toBe('Мои папки')
     expect(config.index).toBe(2)
@@ -54,35 +54,35 @@ describe('BookmarksInjector', () => {
   it('should return empty array when no folders exist', () => {
     Store.getAllFoldersWithPreview.mockReturnValue([])
     BookmarksInjector.init()
-    const config = Lampa.ContentRows.add.mock.calls[0][0]
-    const result = config.call({}, {})
+    var config = Lampa.ContentRows.add.mock.calls[0][0]
+    var result = config.call({}, {})
     expect(result).toEqual([])
   })
 
-  it('should return folder rows for each folder', () => {
+  it('should return folder rows with title field for each folder', () => {
     Store.getAllFoldersWithPreview.mockReturnValue([
-      { name: 'Сериалы', cards: [{ id: 1, title: 'Test' }], count: 1 }
+      { name: 'сериалы', title: 'Сериалы', cards: [{ id: 1, title: 'Test' }], count: 1 }
     ])
     BookmarksInjector.init()
-    const config = Lampa.ContentRows.add.mock.calls[0][0]
-    const result = config.call({}, {})
+    var config = Lampa.ContentRows.add.mock.calls[0][0]
+    var result = config.call({}, {})
     expect(result).toHaveLength(1)
     expect(result[0].title).toBe('Сериалы')
     expect(result[0].results).toHaveLength(1)
   })
 
-  it('should set onMore to push Activity with correct component', () => {
+  it('should set onMore to push Activity with slug url and display title', () => {
     Store.getAllFoldersWithPreview.mockReturnValue([
-      { name: 'Сериалы', cards: [{ id: 1, title: 'Test' }], count: 1 }
+      { name: 'сериалы', title: 'Сериалы', cards: [{ id: 1, title: 'Test' }], count: 1 }
     ])
     BookmarksInjector.init()
-    const config = Lampa.ContentRows.add.mock.calls[0][0]
-    const result = config.call({}, {})
+    var config = Lampa.ContentRows.add.mock.calls[0][0]
+    var result = config.call({}, {})
     expect(result[0].params.emit.onMore).toBeDefined()
-    
+
     result[0].params.emit.onMore()
     expect(Lampa.Activity.push).toHaveBeenCalledWith({
-      url: 'Сериалы',
+      url: 'сериалы',
       title: 'Сериалы',
       component: 'favorite_custom_folder_view',
       page: 1
