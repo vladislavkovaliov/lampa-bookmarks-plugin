@@ -4,14 +4,14 @@
   function registerTranslations() {
     Lampa.Lang.add({
       cf_my_folders: {
-        ru: 'Мои папки',
-        en: 'My folders',
-        uk: 'Мої папки'
+        ru: '--- Мои папки ---',
+        en: '--- My folders ---',
+        uk: '--- Мої папки ---'
       },
       cf_create_folder: {
-        ru: 'Создать папку...',
-        en: 'Create folder...',
-        uk: 'Створити папку...'
+        ru: '➕ Создать папку...',
+        en: '➕ Create folder...',
+        uk: '➕ Створити папку...'
       },
       cf_folder_name: {
         ru: 'Название папки',
@@ -69,9 +69,9 @@
         uk: 'Видалити'
       },
       cf_rename_folder: {
-        ru: 'Переименовать...',
-        en: 'Rename folder...',
-        uk: 'Перейменувати...'
+        ru: '✏️ Переименовать...',
+        en: '✏️ Rename folder...',
+        uk: '✏️ Перейменувати...'
       },
       cf_folder_renamed: {
         ru: 'Папка переименована в "{title}"',
