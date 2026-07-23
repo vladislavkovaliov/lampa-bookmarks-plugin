@@ -26,6 +26,9 @@ function loadEnv() {
 
 var env = loadEnv()
 
+var supabaseUrl = env.SUPABASE_URL || process.env.SUPABASE_URL || ''
+var supabaseKey = env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || ''
+
 export default {
   input: 'src/custom-favorites.js',
   output: {
@@ -36,8 +39,8 @@ export default {
   plugins: [
     replace({
       preventAssignment: true,
-      'process.env.SUPABASE_URL': JSON.stringify(env.SUPABASE_URL || ''),
-      'process.env.SUPABASE_PUBLISHABLE_KEY': JSON.stringify(env.SUPABASE_PUBLISHABLE_KEY || ''),
+      'process.env.SUPABASE_URL': JSON.stringify(supabaseUrl),
+      'process.env.SUPABASE_PUBLISHABLE_KEY': JSON.stringify(supabaseKey),
       'process.env.NODE_ENV': JSON.stringify('production')
     })
   ]
