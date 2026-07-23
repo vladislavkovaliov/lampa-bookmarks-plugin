@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 var mockEngine = vi.hoisted(function () {
   return {
@@ -77,8 +77,13 @@ function makeMeta() {
 describe('SyncUI', () => {
   beforeEach(function () {
     vi.clearAllMocks()
+    vi.useFakeTimers()
     Store.getSyncMeta.mockReturnValue(makeMeta())
     Store.getData.mockReturnValue({ folders: {}, cards: {} })
+  })
+
+  afterEach(function () {
+    vi.useRealTimers()
   })
 
   it('shows settings dialog', function () {
@@ -169,8 +174,9 @@ describe('SyncUI', () => {
     SyncUI.showSyncSettings()
     var items = Lampa.Select.show.mock.calls[0][0].items
     var statusItem = items[1]
-    // Tap status — should open detail sub-dialog on top (no close first)
+    // Tap status — deferred via setTimeout
     statusItem.onSelect()
+    vi.runAllTimers()
     var detailItems = Lampa.Select.show.mock.calls[1][0].items
     expect(detailItems[0].title).toBe('Version: 5')
     expect(detailItems[1].title).toBe('Last synced: v5')
@@ -182,7 +188,9 @@ describe('SyncUI', () => {
     var items = Lampa.Select.show.mock.calls[0][0].items
     var swItem = items.find(function (i) { return i.title === 'Switch user' })
     expect(swItem).toBeDefined()
+    // Deferred via setTimeout
     swItem.onSelect()
+    vi.runAllTimers()
     expect(Lampa.Select.show).toHaveBeenCalledTimes(2)
   })
 })

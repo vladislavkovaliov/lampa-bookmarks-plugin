@@ -68,14 +68,16 @@ function showSyncSettings() {
     onSelect: function () {
       var lastSync = meta.last_synced_version >= 0 ? 'v' + meta.last_synced_version : Lampa.Lang.translate('cf_not_set')
       var devId = (meta.device_id || '').slice(0, 8)
-      Lampa.Select.show({
-        title: Lampa.Lang.translate('cf_sync_status'),
-        items: [
-          { title: 'Version: ' + meta.version },
-          { title: 'Last synced: ' + lastSync },
-          { title: 'Device ID: ' + devId + '...' }
-        ]
-      })
+      setTimeout(function () {
+        Lampa.Select.show({
+          title: Lampa.Lang.translate('cf_sync_status'),
+          items: [
+            { title: 'Version: ' + meta.version },
+            { title: 'Last synced: ' + lastSync },
+            { title: 'Device ID: ' + devId + '...' }
+          ]
+        })
+      }, 0)
     }
   })
 
@@ -146,38 +148,40 @@ function showSyncSettings() {
     items.push({
       title: Lampa.Lang.translate('cf_switch_user'),
       onSelect: function () {
-        Lampa.Select.show({
-          title: Lampa.Lang.translate('cf_switch_user'),
-          items: [
-            {
-              title: Lampa.Lang.translate('cf_switch_user_confirm'),
-              onSelect: function () {
-                dbg.log('[Sync] Switch user confirmed')
-                SyncEngine.switchUser()
-                Lampa.Select.close()
-                Lampa.Input.edit({
-                  title: Lampa.Lang.translate('cf_sync_key_input'),
-                  value: '',
-                  free: true,
-                  nosave: true
-                }, function (value) {
-                  if (!value || !value.trim()) return
-                  var m = Store.getSyncMeta()
-                  m.sync_key = value.trim()
-                  Store.saveSyncMeta(m)
-                  SyncEngine.enableSync()
-                  Lampa.Noty.show(Lampa.Lang.translate('cf_sync_enabled'))
-                })
+        setTimeout(function () {
+          Lampa.Select.show({
+            title: Lampa.Lang.translate('cf_switch_user'),
+            items: [
+              {
+                title: Lampa.Lang.translate('cf_switch_user_confirm'),
+                onSelect: function () {
+                  dbg.log('[Sync] Switch user confirmed')
+                  SyncEngine.switchUser()
+                  Lampa.Select.close()
+                  Lampa.Input.edit({
+                    title: Lampa.Lang.translate('cf_sync_key_input'),
+                    value: '',
+                    free: true,
+                    nosave: true
+                  }, function (value) {
+                    if (!value || !value.trim()) return
+                    var m = Store.getSyncMeta()
+                    m.sync_key = value.trim()
+                    Store.saveSyncMeta(m)
+                    SyncEngine.enableSync()
+                    Lampa.Noty.show(Lampa.Lang.translate('cf_sync_enabled'))
+                  })
+                }
+              },
+              {
+                title: Lampa.Lang.translate('cf_cancel'),
+                onSelect: function () {
+                  Lampa.Controller.toggle('content')
+                }
               }
-            },
-            {
-              title: Lampa.Lang.translate('cf_cancel'),
-              onSelect: function () {
-                Lampa.Controller.toggle('content')
-              }
-            }
-          ]
-        })
+            ]
+          })
+        }, 0)
       }
     })
 

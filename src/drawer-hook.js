@@ -147,7 +147,9 @@ function buildCustomFoldersSection(card) {
     title: Lampa.Lang.translate('cf_sync_settings'),
     where: 'sync_settings',
     onSelect: function () {
-      SyncUI.showSyncSettings()
+      setTimeout(function () {
+        SyncUI.showSyncSettings()
+      }, 0)
     }
   })
 
