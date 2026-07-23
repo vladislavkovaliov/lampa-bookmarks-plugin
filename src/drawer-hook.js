@@ -232,8 +232,12 @@ function findCardData(el) {
   if (!cardEl) return null
   if (cardEl.card_data) return cardEl.card_data
 
-  var dataEl = cardEl.querySelector('[card_data]')
-  if (dataEl && dataEl.card_data) return dataEl.card_data
+  // Search children for card_data without querySelector (ES5-safe)
+  var children = cardEl.children || cardEl.childNodes
+  for (var c = 0; c < children.length; c++) {
+    var child = children[c]
+    if (child && child.card_data) return child.card_data
+  }
 
   return null
 }
