@@ -66,7 +66,6 @@ function showSyncSettings() {
       ? Lampa.Lang.translate('cf_status_connected')
       : Lampa.Lang.translate('cf_status_offline'),
     onSelect: function () {
-      Lampa.Select.close()
       var lastSync = meta.last_synced_version >= 0 ? 'v' + meta.last_synced_version : Lampa.Lang.translate('cf_not_set')
       var devId = (meta.device_id || '').slice(0, 8)
       Lampa.Select.show({
@@ -147,7 +146,6 @@ function showSyncSettings() {
     items.push({
       title: Lampa.Lang.translate('cf_switch_user'),
       onSelect: function () {
-        Lampa.Select.close()
         Lampa.Select.show({
           title: Lampa.Lang.translate('cf_switch_user'),
           items: [

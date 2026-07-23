@@ -170,10 +170,8 @@ describe('SyncUI', () => {
     SyncUI.showSyncSettings()
     var items = Lampa.Select.show.mock.calls[0][0].items
     var statusItem = items[1]
-    // Tap status
+    // Tap status — should open detail sub-dialog on top (no close first)
     statusItem.onSelect()
-    // Should close main and open detail sub-dialog
-    expect(Lampa.Select.close).toHaveBeenCalled()
     var detailItems = Lampa.Select.show.mock.calls[1][0].items
     expect(detailItems[0].title).toBe('Version: 5')
     expect(detailItems[1].title).toBe('Last synced: v5')
