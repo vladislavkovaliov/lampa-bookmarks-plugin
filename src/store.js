@@ -303,6 +303,35 @@ function getSlugFromTitle(title) {
 function clearCache() {
 }
 
+/**
+ * Get sync metadata (device_id, sync_key, version, etc.)
+ * Stored as _sync field inside the main data object.
+ */
+function getSyncMeta() {
+  var data = getData()
+  return data._sync || null
+}
+
+/**
+ * Save sync metadata.
+ */
+function saveSyncMeta(meta) {
+  var data = getData()
+  data._sync = meta
+  saveData(data)
+}
+
+/**
+ * Clear sync metadata without affecting folders/cards.
+ */
+function clearSyncMeta() {
+  var data = getData()
+  if (data._sync) {
+    delete data._sync
+    saveData(data)
+  }
+}
+
 export default {
   BUILT_IN_CATEGORIES: BUILT_IN_CATEGORIES,
   getData: getData,
@@ -320,5 +349,8 @@ export default {
   getFolderTitle: getFolderTitle,
   getSlugFromTitle: getSlugFromTitle,
   cleanupCard: cleanupCard,
-  clearCache: clearCache
+  clearCache: clearCache,
+  getSyncMeta: getSyncMeta,
+  saveSyncMeta: saveSyncMeta,
+  clearSyncMeta: clearSyncMeta
 }

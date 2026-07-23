@@ -299,4 +299,73 @@ describe('Store', () => {
       expect(data._migrated).toBe(true)
     })
   })
+
+  describe('sync metadata', () => {
+    beforeEach(() => {
+      localStorageMock.clear()
+      Store.clearCache()
+    })
+
+    it('should return null when no sync metadata exists', () => {
+      expect(Store.getSyncMeta()).toBeNull()
+    })
+
+    it('should save and retrieve sync metadata', () => {
+      var meta = {
+        device_id: 'test-device-uuid',
+        device_name: 'Test TV',
+        sync_key: 'my-test-key',
+        version: 0,
+        last_synced_version: -1,
+        sync_enabled: false
+      }
+      Store.saveSyncMeta(meta)
+      var retrieved = Store.getSyncMeta()
+      expect(retrieved).toEqual(meta)
+    })
+
+    it('should clear sync metadata', () => {
+      var meta = {
+        device_id: 'test-device-uuid',
+        sync_key: 'my-test-key',
+        version: 5,
+        last_synced_version: 5,
+        sync_enabled: true
+      }
+      Store.saveSyncMeta(meta)
+      Store.clearSyncMeta()
+      expect(Store.getSyncMeta()).toBeNull()
+    })
+
+    it('should survive a full getData->saveData cycle', () => {
+      var meta = {
+        device_id: 'uuid-123',
+        sync_key: 'key-456',
+        version: 3,
+        last_synced_version: 3,
+        sync_enabled: true
+      }
+      Store.saveSyncMeta(meta)
+
+      Store.clearCache()
+      var data = Store.getData()
+      expect(data._sync).toEqual(meta)
+
+      var retrieved = Store.getSyncMeta()
+      expect(retrieved).toEqual(meta)
+    })
+
+    it('should not affect folder/card data', () => {
+      Store.createFolder('Test')
+      Store.saveSyncMeta({ device_id: 'uuid', sync_key: 'key', version: 0, last_synced_version: -1, sync_enabled: true })
+
+      var data = Store.getData()
+      expect(data.folders['test']).toBeDefined()
+      expect(data.cards).toEqual({})
+      expect(data._sync.sync_key).toBe('key')
+
+      Store.clearSyncMeta()
+      expect(Store.getFolderNames().indexOf('test') >= 0).toBe(true)
+    })
+  })
 })

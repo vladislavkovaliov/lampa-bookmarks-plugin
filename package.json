@@ -6,13 +6,19 @@
   "scripts": {
     "build": "rollup -c",
     "serve": "http-server dist -p 8080 -c-1",
+    "tunnel": "(trap 'kill 0' SIGINT SIGTERM; http-server dist -p 8080 -c-1 -s & sleep 2 && lt --port 8080)",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "devDependencies": {
+    "@rollup/plugin-replace": "^6.0.1",
     "http-server": "^14.1.1",
     "jsdom": "^25.0.0",
+    "localtunnel": "^2.0.2",
     "rollup": "^4.62.2",
     "vitest": "^2.0.0"
+  },
+  "dependencies": {
+    "wi-console-logger": "^1.4.1"
   }
 }

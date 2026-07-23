@@ -1,8 +1,24 @@
 import Store from './store'
+import SyncEngine from './sync-engine'
+import SyncUI from './sync-ui'
+import dbg from './debugger'
 
 var lastCardData = null
 
 var FAV_KEYS = ['book', 'like', 'wath', 'history']
+
+function triggerSync() {
+  if (!SyncEngine.isSyncEnabled()) return
+  var data = Store.getData()
+  SyncEngine.pushSnapshot(data.folders, data.cards, function (err) {
+    if (err) {
+      dbg.error('[Sync] Push error:', err)
+      Lampa.Noty.show('Sync error: ' + err.message, { style: 'error' })
+    } else {
+      dbg.log('[Sync] Push OK')
+    }
+  })
+}
 
 function isFavoriteItem(item) {
   for (var i = 0; i < FAV_KEYS.length; i++) {
@@ -36,6 +52,7 @@ function toggleCustomFolder(slug, card) {
     Store.addToFolder(slug, card)
   }
 
+  triggerSync()
   Lampa.Listener.send('state:changed', { target: 'favorite', card: card })
 }
 
@@ -51,6 +68,7 @@ function confirmDeleteFolder(slug) {
         title: Lampa.Lang.translate('cf_delete_folder_yes'),
         onSelect: function () {
           Store.deleteFolder(slug)
+          triggerSync()
           Lampa.Noty.show(Lampa.Lang.translate('cf_folder_deleted'))
           Lampa.Controller.toggle('content')
         }
@@ -95,6 +113,7 @@ function showFolderActions(element) {
 
               try {
                 Store.renameFolder(slug, newTitle)
+                triggerSync()
                 Lampa.Noty.show(
                   Lampa.Lang.translate('cf_folder_renamed').replace('{title}', newTitle)
                 )
@@ -123,6 +142,14 @@ function showFolderActions(element) {
 function buildCustomFoldersSection(card) {
   var items = []
   var slugs = Store.getFolderNames()
+
+  items.push({
+    title: Lampa.Lang.translate('cf_sync_settings'),
+    where: 'sync_settings',
+    onSelect: function () {
+      SyncUI.showSyncSettings()
+    }
+  })
 
   if (slugs.length > 0) {
     items.push({ title: Lampa.Lang.translate('cf_my_folders'), separator: true })
@@ -184,6 +211,7 @@ function buildCustomFoldersSection(card) {
 
         try {
           Store.createFolder(name)
+          triggerSync()
           Lampa.Noty.show(Lampa.Lang.translate('cf_folder_created').replace('{name}', name))
         } catch (err) {
           Lampa.Noty.show(err, { style: 'error' })

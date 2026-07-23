@@ -75,7 +75,16 @@ vi.mock('../store', () => ({
     renameFolder: vi.fn(),
     addToFolder: vi.fn(),
     removeFromFolder: vi.fn(),
-    isInFolder: vi.fn(function() { return false })
+    isInFolder: vi.fn(function() { return false }),
+    getSyncMeta: vi.fn(function () { return { sync_enabled: false, sync_key: '' } }),
+    getData: vi.fn(function () { return { folders: {}, cards: {} } })
+  }
+}))
+
+vi.mock('../sync-engine', () => ({
+  default: {
+    isSyncEnabled: vi.fn(function () { return false }),
+    pushSnapshot: vi.fn()
   }
 }))
 
@@ -121,9 +130,9 @@ describe('drawer-hook', () => {
       var e = { active: { items: [{ where: 'book' }] } }
       handler(e)
 
-      expect(e.active.items.length).toBeGreaterThanOrEqual(4)
-      expect(e.active.items[1].separator).toBe(true)
-      expect(e.active.items[3].title).toContain('Создать папку')
+      expect(e.active.items.length).toBeGreaterThanOrEqual(5)
+      expect(e.active.items[2].separator).toBe(true)
+      expect(e.active.items[4].title).toContain('Создать папку')
     })
 
     it('should also detect favorite drawer by type property (full/start bookmarks)', async () => {
@@ -341,7 +350,7 @@ describe('drawer-hook', () => {
       var e = { active: { items: [{ where: 'book' }] } }
       handler(e)
 
-      var folderItem = e.active.items[2]
+      var folderItem = e.active.items[3]
       var fakeItem = { find: vi.fn(), append: vi.fn() }
       folderItem.onDraw(fakeItem)
 
@@ -361,7 +370,7 @@ describe('drawer-hook', () => {
       var e = { active: { items: [{ where: 'book' }] } }
       handler(e)
 
-      var folderItem = e.active.items[2]
+      var folderItem = e.active.items[3]
       var fakeItem = {
         find: vi.fn(function () {
           return this._titleEl || (this._titleEl = { length: 0 })
