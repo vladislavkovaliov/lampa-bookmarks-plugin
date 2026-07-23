@@ -188,7 +188,6 @@ function showSyncSettings() {
     })
   }
 
-  Lampa.Select.close()
   Lampa.Select.show({
     title: Lampa.Lang.translate('cf_sync_settings'),
     items: items

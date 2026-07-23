@@ -83,7 +83,6 @@ describe('SyncUI', () => {
 
   it('shows settings dialog', function () {
     SyncUI.showSyncSettings()
-    expect(Lampa.Select.close).toHaveBeenCalled()
     expect(Lampa.Select.show).toHaveBeenCalled()
   })
 
