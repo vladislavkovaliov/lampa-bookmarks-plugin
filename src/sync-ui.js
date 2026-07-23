@@ -75,7 +75,12 @@ function showSyncSettings() {
             { title: 'Version: ' + meta.version },
             { title: 'Last synced: ' + lastSync },
             { title: 'Device ID: ' + devId + '...' }
-          ]
+          ],
+          onBack: function () {
+            setTimeout(function () {
+              showSyncSettings()
+            }, 0)
+          }
         })
       }, 0)
     }
@@ -179,7 +184,12 @@ function showSyncSettings() {
                   Lampa.Controller.toggle('content')
                 }
               }
-            ]
+            ],
+            onBack: function () {
+              setTimeout(function () {
+                showSyncSettings()
+              }, 0)
+            }
           })
         }, 0)
       }

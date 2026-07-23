@@ -177,10 +177,16 @@ describe('SyncUI', () => {
     // Tap status — deferred via setTimeout
     statusItem.onSelect()
     vi.runAllTimers()
-    var detailItems = Lampa.Select.show.mock.calls[1][0].items
-    expect(detailItems[0].title).toBe('Version: 5')
-    expect(detailItems[1].title).toBe('Last synced: v5')
-    expect(detailItems[2].title).toBe('Device ID: test-dev...')
+    var detailConfig = Lampa.Select.show.mock.calls[1][0]
+    expect(detailConfig.items[0].title).toBe('Version: 5')
+    expect(detailConfig.items[1].title).toBe('Last synced: v5')
+    expect(detailConfig.items[2].title).toBe('Device ID: test-dev...')
+    // onBack should re-open settings
+    expect(detailConfig.onBack).toBeDefined()
+    Lampa.Select.show.mockClear()
+    detailConfig.onBack()
+    vi.runAllTimers()
+    expect(Lampa.Select.show).toHaveBeenCalled()
   })
 
   it('shows confirmation on switch user', function () {
@@ -192,5 +198,12 @@ describe('SyncUI', () => {
     swItem.onSelect()
     vi.runAllTimers()
     expect(Lampa.Select.show).toHaveBeenCalledTimes(2)
+    // onBack should re-open settings
+    var swConfig = Lampa.Select.show.mock.calls[1][0]
+    expect(swConfig.onBack).toBeDefined()
+    Lampa.Select.show.mockClear()
+    swConfig.onBack()
+    vi.runAllTimers()
+    expect(Lampa.Select.show).toHaveBeenCalled()
   })
 })
