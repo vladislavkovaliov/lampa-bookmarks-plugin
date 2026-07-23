@@ -5,6 +5,35 @@ import FolderView from './folder-view'
 import SyncEngine from './sync-engine'
 import dbg from './debugger'
 
+// Polyfills for old Smart TV WebViews (missing ES6 DOM APIs)
+(function () {
+  // Element.closest()
+  if (!Element.prototype.closest) {
+    Element.prototype.closest = function (selector) {
+      var el = this
+      while (el && el.nodeType === 1) {
+        if (_matches(el, selector)) return el
+        el = el.parentElement
+      }
+      return null
+    }
+  }
+
+  // Element.matches() — vendor-prefixed on old browsers
+  function _matches(el, selector) {
+    var m = el.matches || el.matchesSelector || el.webkitMatchesSelector ||
+      el.mozMatchesSelector || el.msMatchesSelector || el.oMatchesSelector
+    if (m) return m.call(el, selector)
+    return false
+  }
+
+  if (!Element.prototype.matches) {
+    Element.prototype.matches = function (selector) {
+      return _matches(this, selector)
+    }
+  }
+})()
+
 function initPlugin() {
   window.favorite_custom_folders_ready = true
 
@@ -49,11 +78,11 @@ localStorage.setItem('plugins', JSON.stringify(list));
 
 if (!window.favorite_custom_folders_ready) {
   if (window.appready) {
-    initPlugin()
+    try { initPlugin() } catch (e) { dbg.error('Plugin init error:', e) }
   } else {
     Lampa.Listener.follow('app', function (e) {
       if (e.type === 'ready') {
-        initPlugin()
+        try { initPlugin() } catch (e) { dbg.error('Plugin init error:', e) }
       }
     })
   }
