@@ -61,26 +61,28 @@ function confirmDeleteFolder(slug) {
 
   Lampa.Select.close()
 
-  Lampa.Select.show({
-    title: Lampa.Lang.translate('cf_delete_folder_title').replace('{name}', folderTitle),
-    items: [
-      {
-        title: Lampa.Lang.translate('cf_delete_folder_yes'),
-        onSelect: function () {
-          Store.deleteFolder(slug)
-          triggerSync()
-          Lampa.Noty.show(Lampa.Lang.translate('cf_folder_deleted'))
-          Lampa.Controller.toggle('content')
+  setTimeout(function () {
+    Lampa.Select.show({
+      title: Lampa.Lang.translate('cf_delete_folder_title').replace('{name}', folderTitle),
+      items: [
+        {
+          title: Lampa.Lang.translate('cf_delete_folder_yes'),
+          onSelect: function () {
+            Store.deleteFolder(slug)
+            triggerSync()
+            Lampa.Noty.show(Lampa.Lang.translate('cf_folder_deleted'))
+            Lampa.Controller.toggle('content')
+          }
+        },
+        {
+          title: Lampa.Lang.translate('cf_delete_folder_no'),
+          onSelect: function () {
+            Lampa.Controller.toggle('content')
+          }
         }
-      },
-      {
-        title: Lampa.Lang.translate('cf_delete_folder_no'),
-        onSelect: function () {
-          Lampa.Controller.toggle('content')
-        }
-      }
-    ]
-  })
+      ]
+    })
+  }, 100)
 }
 
 function showFolderActions(element) {
@@ -90,15 +92,17 @@ function showFolderActions(element) {
 
     Lampa.Select.close()
 
-    Lampa.Select.show({
-      title: Lampa.Lang.translate('cf_rename_folder'),
-      items: [
-        {
-          title: Lampa.Lang.translate('cf_rename'),
-          onSelect: function () {
-            Lampa.Select.close()
+    setTimeout(function () {
+      Lampa.Select.show({
+        title: Lampa.Lang.translate('cf_rename_folder'),
+        items: [
+          {
+            title: Lampa.Lang.translate('cf_rename'),
+            onSelect: function () {
+              Lampa.Select.close()
 
-            Lampa.Input.edit({
+              setTimeout(function () {
+                Lampa.Input.edit({
               title: Lampa.Lang.translate('cf_folder_name'),
               value: currentTitle,
               free: true,
@@ -123,6 +127,7 @@ function showFolderActions(element) {
 
               Lampa.Controller.toggle('content')
             })
+              }, 100)
           }
         },
         {
@@ -133,6 +138,7 @@ function showFolderActions(element) {
         }
       ]
     })
+    }, 100)
 
     return true
   }
@@ -198,7 +204,8 @@ function buildCustomFoldersSection(card) {
     onSelect: function () {
       Lampa.Select.close()
 
-      Lampa.Input.edit({
+      setTimeout(function () {
+        Lampa.Input.edit({
         title: Lampa.Lang.translate('cf_folder_name'),
         value: '',
         free: true,
@@ -221,6 +228,7 @@ function buildCustomFoldersSection(card) {
 
         Lampa.Controller.toggle('content')
       })
+      }, 100)
     }
   })
 

@@ -37,19 +37,21 @@ function showSyncSettings() {
         if (!meta.sync_key) {
           dbg.log('[Sync] Sync enabled but no key, prompting for input')
           Lampa.Select.close()
-          Lampa.Input.edit({
-            title: Lampa.Lang.translate('cf_sync_key_input'),
-            value: '',
-            free: true,
-            nosave: true
-          }, function (value) {
-            if (!value || !value.trim()) return
-            meta.sync_key = value.trim()
-            Store.saveSyncMeta(meta)
-            dbg.log('[Sync] Sync key set, enabling')
-            SyncEngine.enableSync()
-            Lampa.Noty.show(Lampa.Lang.translate('cf_sync_enabled'))
-          })
+          setTimeout(function () {
+            Lampa.Input.edit({
+              title: Lampa.Lang.translate('cf_sync_key_input'),
+              value: '',
+              free: true,
+              nosave: true
+            }, function (value) {
+              if (!value || !value.trim()) return
+              meta.sync_key = value.trim()
+              Store.saveSyncMeta(meta)
+              dbg.log('[Sync] Sync key set, enabling')
+              SyncEngine.enableSync()
+              Lampa.Noty.show(Lampa.Lang.translate('cf_sync_enabled'))
+            })
+          }, 100)
           return
         }
         SyncEngine.enableSync()
@@ -94,17 +96,19 @@ function showSyncSettings() {
       desc: meta.sync_key ? '••••••••' : Lampa.Lang.translate('cf_not_set'),
       onSelect: function () {
         Lampa.Select.close()
-        Lampa.Input.edit({
-          title: Lampa.Lang.translate('cf_sync_key_input'),
-          value: meta.sync_key || '',
-          free: true,
-          nosave: true
-        }, function (value) {
-          if (!value || !value.trim()) return
-          meta.sync_key = value.trim()
-          Store.saveSyncMeta(meta)
-          dbg.log('[Sync] Sync key changed')
-        })
+        setTimeout(function () {
+          Lampa.Input.edit({
+            title: Lampa.Lang.translate('cf_sync_key_input'),
+            value: meta.sync_key || '',
+            free: true,
+            nosave: true
+          }, function (value) {
+            if (!value || !value.trim()) return
+            meta.sync_key = value.trim()
+            Store.saveSyncMeta(meta)
+            dbg.log('[Sync] Sync key changed')
+          })
+        }, 100)
       }
     })
 
@@ -114,18 +118,20 @@ function showSyncSettings() {
       desc: meta.device_name || Lampa.Lang.translate('cf_not_set'),
       onSelect: function () {
         Lampa.Select.close()
-        Lampa.Input.edit({
-          title: Lampa.Lang.translate('cf_device_name_input'),
-          value: meta.device_name || '',
-          free: true,
-          nosave: true
-        }, function (value) {
-          if (!value || !value.trim()) return
-          meta.device_name = value.trim()
-          Store.saveSyncMeta(meta)
-          dbg.log('[Sync] Device name set:', meta.device_name)
-          Lampa.Noty.show(Lampa.Lang.translate('cf_device_name_set'))
-        })
+        setTimeout(function () {
+          Lampa.Input.edit({
+            title: Lampa.Lang.translate('cf_device_name_input'),
+            value: meta.device_name || '',
+            free: true,
+            nosave: true
+          }, function (value) {
+            if (!value || !value.trim()) return
+            meta.device_name = value.trim()
+            Store.saveSyncMeta(meta)
+            dbg.log('[Sync] Device name set:', meta.device_name)
+            Lampa.Noty.show(Lampa.Lang.translate('cf_device_name_set'))
+          })
+        }, 100)
       }
     })
 
@@ -163,7 +169,8 @@ function showSyncSettings() {
                   dbg.log('[Sync] Switch user confirmed')
                   SyncEngine.switchUser()
                   Lampa.Select.close()
-                  Lampa.Input.edit({
+                  setTimeout(function () {
+                    Lampa.Input.edit({
                     title: Lampa.Lang.translate('cf_sync_key_input'),
                     value: '',
                     free: true,
@@ -174,9 +181,10 @@ function showSyncSettings() {
                     m.sync_key = value.trim()
                     Store.saveSyncMeta(m)
                     SyncEngine.enableSync()
-                    Lampa.Noty.show(Lampa.Lang.translate('cf_sync_enabled'))
-                  })
-                }
+                  Lampa.Noty.show(Lampa.Lang.translate('cf_sync_enabled'))
+                })
+                }, 100)
+              }
               },
               {
                 title: Lampa.Lang.translate('cf_cancel'),
