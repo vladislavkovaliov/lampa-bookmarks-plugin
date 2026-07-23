@@ -32,6 +32,20 @@ import dbg from './debugger'
       return _matches(this, selector)
     }
   }
+
+  // Element.querySelectorAll() / querySelector() — may be missing on pre-2015 WebViews
+  if (document.querySelectorAll && !Element.prototype.querySelectorAll) {
+    Element.prototype.querySelectorAll = function (selector) {
+      return document.querySelectorAll(selector)
+    }
+  }
+
+  if (!Element.prototype.querySelector) {
+    Element.prototype.querySelector = function (selector) {
+      var all = this.querySelectorAll ? this.querySelectorAll(selector) : []
+      return all.length > 0 ? all[0] : null
+    }
+  }
 })()
 
 function initPlugin() {
